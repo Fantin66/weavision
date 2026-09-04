@@ -1,0 +1,8 @@
+{
+  "name": "weavision-desktop",
+  "version": "0.2.0",
+  "description": "织见 Weavision - 思维关系板桌面应用",
+  "main": "桌面应用/main.cjs",
+  "author": "Weavision",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,64 @@
+{
+  "name": "zhijian-weavision",
+  "version": "0.4.0",
+  "description": "织见 · 思维关系板 — Desktop App (G9)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:portable": "electron-builder --win portable",
+    "build:nsis": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.weavision.zhijian",
+    "productName": "织见",
+    "files": [
+      "main.js",
+      "preload.js",
+      "icon.png"
+    ],
+    "extraResources": [
+      {"from": "../../织见-思维关系板-G9.html", "to": "index.html"},
+      {"from": "../../g9", "to": "g9"},
+      {"from": "../../assets", "to": "assets"},
+      {"from": "../../教程附件", "to": "教程附件"}
+    ],
+    "directories": {
+      "output": "../../发行版/G9"
+    },
+    "fileAssociations": [
+      {
+        "ext": "fantin",
+        "name": "织见画板",
+        "description": "织见思维关系板导出文件",
+        "icon": "icon.png",
+        "role": "Editor"
+      }
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "织见"
+    },
+    "portable": {
+      "artifactName": "织见-便携版-${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.0"
+  }
+}

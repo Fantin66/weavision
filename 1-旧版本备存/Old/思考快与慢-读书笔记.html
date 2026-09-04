@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>读书笔记 ·《思考，快与慢》— 丹尼尔·卡尼曼</title>
+<style>
+  /* ============ 基础与变量 ============ */
+  :root{
+    --paper:#f3ecdc;          /* 米色纸感背景 */
+    --paper-deep:#e8dec6;
+    --ink:#2c2418;            /* 墨棕主文字 */
+    --ink-soft:#5c4a35;
+    --ink-faint:#8a7558;
+    --accent:#8b2e1f;         /* 书签红 */
+    --accent-deep:#6b1e12;
+    --gold:#b08d3c;
+    --rule:#cdbf9c;
+    --serif-cn:"Songti SC","STSong","SimSun",serif;
+    --serif-en:Georgia,"Times New Roman",serif;
+    --sans-cn:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--serif-cn);
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    /* 纸感纹理 */
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(176,141,60,.06) 0, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(139,46,31,.04) 0, transparent 50%),
+      repeating-linear-gradient(0deg, rgba(44,36,24,.012) 0, rgba(44,36,24,.012) 1px, transparent 1px, transparent 3px);
+  }
+
+  /* ============ 书签色带 ============ */
+  .ribbon{
+    position:fixed;top:0;left:0;width:100%;height:8px;
+    background:linear-gradient(90deg,var(--accent) 0%,var(--accent-deep) 50%,var(--accent) 100%);
+    z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.25);
+  }
+  .ribbon::after{
+    content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;
+    border-top:8px solid var(--accent-deep);
+  }
+
+  /* ============ Hero ============ */
+  .hero{
+    position:relative;min-height:60vh;display:flex;align-items:flex-end;
+    overflow:hidden;
+    background:
+      /* 渐变蒙版，压标题用 */
+      linear-gradient(180deg, rgba(44,36,24,.15) 0%, rgba(44,36,24,.45) 50%, rgba(44,36,24,.82) 100%),
+      /* 模拟书架：竖向木色条 */
+      repeating-linear-gradient(90deg,
+        #3a2a18 0px, #3a2a18 4px,
+        #6b4a28 4px, #6b4a28 12px,
+        #5a3d22 12px, #5a3d22 16px,
+        #7a5638 16px, #7a5638 30px,
+        #4a3520 30px, #4a3520 34px,
+        #8a6a48 34px, #8a6a48 48px),
+      #2c2418;
+    border-bottom:3px double var(--gold);
+  }
+  /* 书脊上的"书名"竖条 */
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      repeating-linear-gradient(90deg,
+        transparent 0px, transparent 28px,
+        rgba(0,0,0,.35) 28px, rgba(0,0,0,.35) 30px,
+        transparent 30px, transparent 60px,
+        rgba(255,235,200,.08) 60px, rgba(255,235,200,.08) 62px);
+    pointer-events:none;
+  }
+  /* 顶部金色光晕 */
+  .hero::after{
+    content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+    width:80%;height:60%;
+    background:radial-gradient(ellipse at center, rgba(176,141,60,.25) 0%, transparent 60%);
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;z-index:2;width:100%;max-width:820px;margin:0 auto;
+    padding:6rem 1.5rem 3rem;text-align:center;
+  }
+  .hero-kicker{
+    font-family:var(--sans-cn);font-size:.78rem;letter-spacing:.35em;
+    color:var(--gold);text-transform:uppercase;margin-bottom:1rem;
+  }
+  .hero-title{
+    font-family:var(--serif-cn);font-weight:700;
+    font-size:clamp(2.2rem,6vw,3.6rem);color:#f5ecd6;
+    letter-spacing:.08em;line-height:1.25;text-shadow:0 2px 12px rgba(0,0,0,.5);
+    margin-bottom:.6rem;
+  }
+  .hero-sub{
+    font-family:var(--serif-en);font-style:italic;
+    font-size:clamp(1rem,2.5vw,1.3rem);color:#d8c89a;
+    letter-spacing:.05em;margin-bottom:2rem;
+  }
+  .hero-meta{
+    display:inline-flex;flex-wrap:wrap;justify-content:center;gap:.5rem 1.2rem;
+    font-family:var(--sans-cn);font-size:.85rem;color:#c9b888;
+  }
+  .hero-meta span{white-space:nowrap}
+  .hero-meta .sep{color:var(--gold);opacity:.6}
+
+  /* ============ 容器 ============ */
+  .wrap{max-width:820px;margin:0 auto;padding:0 1.5rem}
+  section{padding:3.5rem 0;border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:none}
+
+  .sec-head{display:flex;align-items:baseline;gap:.8rem;margin-bottom:1.8rem}
+  .sec-num{
+    font-family:var(--serif-en);font-style:italic;font-size:1.1rem;
+    color:var(--accent);min-width:2.2rem;
+  }
+  .sec-title{
+    font-family:var(--serif-cn);font-weight:700;
+    font-size:clamp(1.3rem,3.5vw,1.7rem);color:var(--ink);
+    letter-spacing:.05em;
+  }
+  .sec-title::after{
+    content:"";display:block;width:2.5rem;height:3px;
+    background:var(--accent);margin-top:.5rem;
+  }
+
+  /* ============ 书籍信息卡 ============ */
+  .book-info{
+    background:var(--paper-deep);border:1px solid var(--rule);
+    border-radius:4px;padding:1.8rem 2rem;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.2rem 2rem;
+  }
+  .book-info dt{
+    font-family:var(--sans-cn);font-size:.75rem;letter-spacing:.15em;
+    color:var(--ink-faint);text-transform:uppercase;margin-bottom:.3rem;
+  }
+  .book-info dd{
+    font-family:var(--serif-cn);font-size:1rem;color:var(--ink);font-weight:600;
+  }
+
+  /* ============ 一句话总览 ============ */
+  .overview{
+    font-family:var(--serif-cn);font-size:clamp(1.15rem,3vw,1.45rem);
+    line-height:1.9;color:var(--ink-soft);text-align:center;
+    padding:1rem 0 0;position:relative;
+  }
+  .overview::before{
+    content:"“";display:block;font-family:var(--serif-en);
+    font-size:4rem;color:var(--accent);opacity:.25;line-height:.6;margin-bottom:.5rem;
+  }
+
+  /* ============ 双系统对比 ============ */
+  .dual-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  @media(max-width:600px){.dual-grid{grid-template-columns:1fr}}
+  .sys-card{
+    border-radius:4px;padding:1.6rem 1.5rem;position:relative;overflow:hidden;
+  }
+  .sys1{background:linear-gradient(135deg,#f7eed6 0%,#ead9b0 100%);border:1px solid #d4bf91}
+  .sys2{background:linear-gradient(135deg,#e4dcc8 0%,#cdc0a0 100%);border:1px solid #b5a880}
+  .sys-tag{
+    display:inline-block;font-family:var(--sans-cn);font-size:.7rem;
+    letter-spacing:.2em;padding:.2rem .6rem;border-radius:2px;margin-bottom:.6rem;
+  }
+  .sys1 .sys-tag{background:var(--accent);color:#f5ecd6}
+  .sys2 .sys-tag{background:var(--ink);color:#f5ecd6}
+  .sys-name{
+    font-family:var(--serif-cn);font-weight:700;font-size:1.25rem;color:var(--ink);
+    margin-bottom:.8rem;
+  }
+  .sys-name em{font-family:var(--serif-en);font-style:italic;color:var(--accent);font-size:.9em}
+  .sys-list{list-style:none;font-size:.92rem;color:var(--ink-soft)}
+  .sys-list li{padding:.2rem 0 .2rem 1.1rem;position:relative}
+  .sys-list li::before{
+    content:"·";position:absolute;left:.3rem;color:var(--accent);font-weight:700;
+  }
+
+  /* ============ 偏误卡片 ============ */
+  .bias-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem}
+  .bias-card{
+    background:var(--paper-deep);border:1px solid var(--rule);border-radius:4px;
+    padding:1.3rem 1.3rem 1.1rem;position:relative;transition:transform .2s,box-shadow .2s;
+  }
+  .bias-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(44,36,24,.12)}
+  .bias-card::before{
+    content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);
+  }
+  .bias-name{
+    font-family:var(--serif-cn);font-weight:700;font-size:1.05rem;color:var(--ink);
+    margin-bottom:.3rem;
+  }
+  .bias-en{
+    font-family:var(--serif-en);font-style:italic;font-size:.78rem;color:var(--ink-faint);
+    margin-bottom:.6rem;display:block;
+  }
+  .bias-desc{font-size:.88rem;color:var(--ink-soft);line-height:1.7}
+  .bias-eg{
+    margin-top:.5rem;padding-top:.5rem;border-top:1px dashed var(--rule);
+    font-size:.82rem;color:var(--ink-faint);font-style:italic;
+  }
+
+  /* ============ 章节脉络图 ============ */
+  .parts{display:flex;flex-direction:column;gap:1rem}
+  .part{
+    display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;
+    padding:1.1rem 1.3rem;background:var(--paper-deep);border-radius:4px;
+    border-left:4px solid var(--accent);
+  }
+  .part-num{
+    font-family:var(--serif-en);font-style:italic;font-weight:700;
+    font-size:1.6rem;color:var(--accent);line-height:1;
+  }
+  .part-title{font-family:var(--serif-cn);font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.2rem}
+  .part-desc{font-size:.85rem;color:var(--ink-soft);line-height:1.6}
+
+  /* ============ 金句引用 ============ */
+  .quotes{display:flex;flex-direction:column;gap:1.5rem}
+  .quote{
+    position:relative;padding:1.2rem 1.5rem 1.2rem 2.8rem;
+    background:linear-gradient(90deg,var(--paper-deep) 0%,transparent 100%);
+    border-left:3px solid var(--gold);
+  }
+  .quote::before{
+    content:"“";position:absolute;left:.6rem;top:0;
+    font-family:var(--serif-en);font-size:2.8rem;color:var(--accent);opacity:.4;line-height:1;
+  }
+  .quote p{
+    font-family:var(--serif-cn);font-size:1.05rem;color:var(--ink);line-height:1.85;
+    font-style:italic;
+  }
+  .quote .src{
+    display:block;margin-top:.5rem;font-family:var(--sans-cn);font-size:.78rem;
+    color:var(--ink-faint);font-style:normal;letter-spacing:.05em;
+  }
+
+  /* ============ 行动启发 ============ */
+  .actions{display:flex;flex-direction:column;gap:1rem}
+  .action{
+    display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;
+  }
+  .action-num{
+    font-family:var(--serif-en);font-style:italic;font-weight:700;
+    font-size:1.4rem;color:var(--accent);min-width:2rem;line-height:1.4;
+  }
+  .action-body p{font-size:.95rem;color:var(--ink-soft);line-height:1.8}
+  .action-body strong{color:var(--ink);font-weight:700}
+
+  /* ============ 适合谁读 ============ */
+  .audience{display:flex;flex-wrap:wrap;gap:.6rem}
+  .audience span{
+    font-family:var(--sans-cn);font-size:.85rem;padding:.4rem .9rem;
+    background:var(--paper-deep);border:1px solid var(--rule);border-radius:20px;
+    color:var(--ink-soft);
+  }
+
+  /* ============ 页脚 ============ */
+  footer{
+    text-align:center;padding:2.5rem 1.5rem 3rem;
+    font-family:var(--sans-cn);font-size:.78rem;color:var(--ink-faint);
+    border-top:1px solid var(--rule);margin-top:1rem;
+  }
+  footer .crest{color:var(--accent);font-size:1rem;margin-bottom:.3rem}
+
+  /* 顶部回nav */
+  .toc{
+    position:fixed;right:1.2rem;bottom:1.2rem;z-index:50;
+    font-family:var(--sans-cn);font-size:.72rem;
+  }
+  .toc a{
+    display:inline-block;padding:.4rem .7rem;border-radius:20px;
+    background:var(--accent);color:#f5ecd6;text-decoration:none;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+  }
+  @media(max-width:600px){.toc{display:none}}
+</style>
+</head>
+<body>
+
+<div class="ribbon"></div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-kicker">Reading Notes · 读书笔记</div>
+    <h1 class="hero-title">思考，快与慢</h1>
+    <p class="hero-sub">Thinking, Fast and Slow</p>
+    <div class="hero-meta">
+      <span>丹尼尔·卡尼曼</span><span class="sep">|</span>
+      <span>诺贝尔经济学奖得主</span><span class="sep">|</span>
+      <span>行为经济学 / 认知心理学</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ 书籍信息 ============ -->
+  <section id="info">
+    <div class="sec-head">
+      <span class="sec-num">§1</span>
+      <h2 class="sec-title">书籍信息</h2>
+    </div>
+    <dl class="book-info">
+      <div><dt>作者</dt><dd>丹尼尔·卡尼曼</dd></div>
+      <div><dt>领域</dt><dd>行为经济学 · 认知心理学</dd></div>
+      <div><dt>首版</dt><dd>2011 年</dd></div>
+      <div><dt>核心命题</dt><dd>人类判断由两套系统驱动，直觉常不可靠</dd></div>
+    </dl>
+  </section>
+
+  <!-- ============ 一句话总览 ============ -->
+  <section id="overview">
+    <div class="sec-head">
+      <span class="sec-num">§2</span>
+      <h2 class="sec-title">一句话总览</h2>
+    </div>
+    <p class="overview">
+      我们以为自己在"思考"，其实是两套系统在博弈——快的直觉冲动而省力，慢的理性审慎却懒惰；多数决策由快系统悄悄拍板，偏误由此而生。
+    </p>
+  </section>
+
+  <!-- ============ 双系统框架 ============ -->
+  <section id="systems">
+    <div class="sec-head">
+      <span class="sec-num">§3</span>
+      <h2 class="sec-title">双系统核心框架</h2>
+    </div>
+    <div class="dual-grid">
+      <div class="sys-card sys1">
+        <span class="sys-tag">SYSTEM 1</span>
+        <div class="sys-name">系统一 · 快思考 <em>Fast</em></div>
+        <ul class="sys-list">
+          <li>自动、快速、无需刻意用力</li>
+          <li>并行处理，直觉驱动</li>
+          <li>掌管印象、情绪、熟悉感判断</li>
+          <li>依赖联想与记忆匹配</li>
+          <li>无法关闭，常抢占话语权</li>
+          <li>易受锚定、可得性等偏误影响</li>
+        </ul>
+      </div>
+      <div class="sys-card sys2">
+        <span class="sys-tag">SYSTEM 2</span>
+        <div class="sys-name">系统二 · 慢思考 <em>Slow</em></div>
+        <ul class="sys-list">
+          <li>需注意力的审慎推理</li>
+          <li>串行处理，按部就班</li>
+          <li>能处理复杂计算与逻辑</li>
+          <li>容量有限，极易疲倦</li>
+          <li>天性懒惰，默认采信系统一</li>
+          <li>被唤醒时才能纠偏</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:1.2rem;font-size:.88rem;color:var(--ink-faint);font-style:italic;text-align:center">
+      关系：系统一不断向系统二提供建议（印象、直觉），系统二若不主动复核，便照单全收。
+    </p>
+  </section>
+
+  <!-- ============ 关键认知偏误 ============ -->
+  <section id="biases">
+    <div class="sec-head">
+      <span class="sec-num">§4</span>
+      <h2 class="sec-title">关键认知偏误</h2>
+    </div>
+    <div class="bias-grid">
+      <div class="bias-card">
+        <div class="bias-name">锚定效应</div>
+        <span class="bias-en">Anchoring</span>
+        <p class="bias-desc">先出现的数字或信息会像"锚"一样，把后续判断拉向它，即使该信息与决策无关。</p>
+        <p class="bias-eg">例：问"甘地是否活过 114 岁"，受访者会不自觉把他寿命估高。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">可得性启发</div>
+        <span class="bias-en">Availability</span>
+        <p class="bias-desc">越容易想起的事例，越被高估其发生概率——记忆的流畅度冒充了统计频率。</p>
+        <p class="bias-eg">例：飞机失事新闻密集时，人们高估空难风险。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">损失厌恶</div>
+        <span class="bias-en">Loss Aversion</span>
+        <p class="bias-desc">失去带来的痛苦约为同等收益快乐的 2 倍，致人过度保守与现状偏好。</p>
+        <p class="bias-eg">例：投资者持亏不卖，宁可赌回本也不愿"确认损失"。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">框架效应</div>
+        <span class="bias-en">Framing</span>
+        <p class="bias-desc">同一信息以不同措辞呈现，会引出截然相反的判断与选择。</p>
+        <p class="bias-eg">例："存活率 90%"比"死亡率 10%"更令人安心，尽管等价。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">光环效应</div>
+        <span class="bias-en">Halo Effect</span>
+        <p class="bias-desc">对某人的某一突出特质（如外貌、学历）产生好感，会外推至其全部能力与品格。</p>
+        <p class="bias-eg">例：面试官因候选人英俊而高估其专业能力。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">确认偏误</div>
+        <span class="bias-en">Confirmation</span>
+        <p class="bias-desc">系统一偏爱能印证既有观点的证据，对反例视而不见或贬低。</p>
+        <p class="bias-eg">例：看多某项目后，只留意利好研报，忽略红灯信号。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">峰终定律</div>
+        <span class="bias-en">Peak-End</span>
+        <p class="bias-desc">对一段体验的评价，由其最强烈瞬间与结束时刻主导，时长本身几乎被忽略。</p>
+        <p class="bias-eg">例：一次糟糕的结尾会让整段愉快的出差被记成"很差"。</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-name">所见即全部</div>
+        <span class="bias-en">What You See Is All There Is</span>
+        <p class="bias-desc">"所见即全部"——系统一只用手头现有信息构建连贯故事，缺省的也当不存在。</p>
+        <p class="bias-eg">例：仅凭简历三行就自信断言候选人"不靠谱"。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 章节脉络 ============ -->
+  <section id="parts">
+    <div class="sec-head">
+      <span class="sec-num">§5</span>
+      <h2 class="sec-title">全书章节脉络</h2>
+    </div>
+    <div class="parts">
+      <div class="part">
+        <div class="part-num">Ⅰ</div>
+        <div>
+          <div class="part-title">两个系统</div>
+          <p class="part-desc">引入系统一与系统二，揭示注意力的代价与懒惰的代价，铺设全书认知底层。</p>
+        </div>
+      </div>
+      <div class="part">
+        <div class="part-num">Ⅱ</div>
+        <div>
+          <div class="part-title">启发法与偏误</div>
+          <p class="part-desc">系统一如何以捷径代推理：小数定律、锚定、可得性、回归均值被误读等典型偏误。</p>
+        </div>
+      </div>
+      <div class="part">
+        <div class="part-num">Ⅲ</div>
+        <div>
+          <div class="part-title">过度自信</div>
+          <p class="part-desc">人类对自身判断的过度信任：理解过去的错觉、有效性错觉、直觉的不可靠。</p>
+        </div>
+      </div>
+      <div class="part">
+        <div class="part-num">Ⅳ</div>
+        <div>
+          <div class="part-title">选择与决策</div>
+          <p class="part-desc">前景理论登场：参照点、损失厌恶、概率加权、禀赋效应，重塑"理性人"假设。</p>
+        </div>
+      </div>
+      <div class="part">
+        <div class="part-num">Ⅴ</div>
+        <div>
+          <div class="part-title">两个自我</div>
+          <p class="part-desc">体验自我 vs. 记忆自我，峰终定律与时长忽视，幸福感的度量难题收束全书。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 金句引用 ============ -->
+  <section id="quotes">
+    <div class="sec-head">
+      <span class="sec-num">§6</span>
+      <h2 class="sec-title">金句摘录</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote">
+        <p>我们对自己认为自己熟知的事物，过于自信。</p>
+        <span class="src">— 第三部分 · 过度自信</span>
+      </div>
+      <div class="quote">
+        <p>懒惰是人类的深层特征之一，而系统二恰恰很懒。它的失职，给了系统一可乘之机。</p>
+        <span class="src">— 第一部分 · 两个系统</span>
+      </div>
+      <div class="quote">
+        <p>损失的痛苦约为同等收益快乐的两倍。这一不对称，塑造了我们的选择。</p>
+        <span class="src">— 第四部分 · 前景理论</span>
+      </div>
+      <div class="quote">
+        <p>所见即全部——我们用现有信息构建连贯的故事，并对这故事信以为真。</p>
+        <span class="src">— 第二部分 · WYSIATI</span>
+      </div>
+      <div class="quote">
+        <p>记忆自我是叙事者，体验自我是亲历者；而做决定的，往往是叙事者。</p>
+        <span class="src">— 第五部分 · 两个自我</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 行动启发 ============ -->
+  <section id="actions">
+    <div class="sec-head">
+      <span class="sec-num">§7</span>
+      <h2 class="sec-title">对工作与决策的行动启发</h2>
+    </div>
+    <div class="actions">
+      <div class="action">
+        <span class="action-num">01</span>
+        <div class="action-body">
+          <p><strong>重大决策前，强制唤醒系统二。</strong>投资立项、人事定岗前，刻意写下一页"反方意见"，给慢思考留出复核窗口。</p>
+        </div>
+      </div>
+      <div class="action">
+        <span class="action-num">02</span>
+        <div class="action-body">
+          <p><strong>警惕锚的外溢。</strong>谈判、估值、预算时，先问"这个数字从哪来"，再决定是否让它进入思考。</p>
+        </div>
+      </div>
+      <div class="action">
+        <span class="action-num">03</span>
+        <div class="action-body">
+          <p><strong>对"故事感"保持怀疑。</strong>越是流畅、连贯、动人的叙事，越要追问支撑它的样本量与反例——WYSIATI 不会自己提醒你。</p>
+        </div>
+      </div>
+      <div class="action">
+        <span class="action-num">04</span>
+        <div class="action-body">
+          <p><strong>把损失厌恶写进流程。</strong>复盘时区分"账面浮亏"与"机会成本"，用清单制度对冲不肯止损的本能。</p>
+        </div>
+      </div>
+      <div class="action">
+        <span class="action-num">05</span>
+        <div class="action-body">
+          <p><strong>区分记忆与体验。</strong>评估一段合作或项目时，别只凭结尾印象下结论，回看过程中的客观数据。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 适合谁读 ============ -->
+  <section id="audience">
+    <div class="sec-head">
+      <span class="sec-num">§8</span>
+      <h2 class="sec-title">适合谁读</h2>
+    </div>
+    <div class="audience">
+      <span>需要频繁做判断的决策者</span>
+      <span>投资与风控从业者</span>
+      <span>产品与运营，想理解用户非理性</span>
+      <span>对"理性"本身好奇的人</span>
+      <span>希望少被自己骗一次的人</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="crest">❦</div>
+  <p>读书笔记 · 仅供个人学习使用</p>
+  <p style="margin-top:.3rem">原作：Daniel Kahneman《Thinking, Fast and Slow》</p>
+</footer>
+
+<div class="toc"><a href="#info">回到目录 ↑</a></div>
+
+</body>
+</html>

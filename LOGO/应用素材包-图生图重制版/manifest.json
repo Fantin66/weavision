@@ -1,0 +1,24 @@
+{
+  "package": "织见三套品牌应用素材-图生图重制版",
+  "source": "D:\\Desktop\\LOGO",
+  "schemes": [
+    {
+      "name": "01-穿线元素",
+      "display_name": "穿线元素",
+      "drop_in_png": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\01-穿线元素\\01-应用图标\\织见-应用图标.png",
+      "drop_in_ico": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\01-穿线元素\\01-应用图标\\织见-应用图标.ico"
+    },
+    {
+      "name": "02-聚焦轨道",
+      "display_name": "聚焦轨道",
+      "drop_in_png": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\02-聚焦轨道\\01-应用图标\\织见-应用图标.png",
+      "drop_in_ico": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\02-聚焦轨道\\01-应用图标\\织见-应用图标.ico"
+    },
+    {
+      "name": "03-叠合元素",
+      "display_name": "叠合元素",
+      "drop_in_png": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\03-叠合元素\\01-应用图标\\织见-应用图标.png",
+      "drop_in_ico": "D:\\Desktop\\LOGO\\应用素材包-图生图重制版\\03-叠合元素\\01-应用图标\\织见-应用图标.ico"
+    }
+  ]
+}

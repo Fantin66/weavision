@@ -1,0 +1,4 @@
+Zhijian shortcut quick ref
+F focus | E edit | A annotate | C connect | J jump
+Tab child | Enter sibling | P pen | N note
+Ctrl+F search | Ctrl+Z undo | Ctrl+D dup | Del delete
