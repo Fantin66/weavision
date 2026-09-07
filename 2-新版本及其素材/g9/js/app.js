@@ -319,7 +319,7 @@ const LOGO_PRESETS={
      comboLight:"g9/assets/logos/logo03-横版组合-light.png",comboDark:"g9/assets/logos/logo03-横版组合-dark.png"},
 };
 let logoPreset=3;
-function applyLogo(n){
+function applyLogo(n,showToast){
   logoPreset=n;
   var preset=LOGO_PRESETS[n]||LOGO_PRESETS[1];
   var isDark=document.documentElement.getAttribute("data-theme")==="dark";
@@ -328,7 +328,8 @@ function applyLogo(n){
   var bfSrc=isDark?preset.comboDark:preset.comboLight;
   document.querySelectorAll(".bf-cn").forEach(function(img){img.src=bfSrc;});
   localStorage.setItem("zhijian-logo",String(n));
-  toast("图标："+preset.label);
+  /* G9: 仅在用户手动切换图标时弹 toast，主题切换时不弹 */
+  if(showToast)toast("图标："+preset.label);
 }
 (function bindSettingsButton(){
   var btn=document.querySelector(".bf-settings");
@@ -1638,10 +1639,10 @@ function renderSettingsContent(catId,content){
     var at=content.querySelector("#setAutoTheme");
     if(at)at.onclick=function(){state.autoTheme=!state.autoTheme;saveState();if(state.autoTheme){applyTheme();render();}showSettings();};
     var sl=content.querySelector("#setLight");
-    /* G4: 手动切换不关闭 autoTheme，下次启动仍跟随系统 */
-    if(sl)sl.onclick=function(){state.dark=false;applyTheme();render();saveState();showSettings();};
+    /* G9 fix: 直接调 _applyThemeInner 跳过 async getSystemTheme，防止覆盖手动选择 */
+    if(sl)sl.onclick=function(){state.dark=false;_applyThemeInner();render();saveState();showSettings();};
     var sd=content.querySelector("#setDark");
-    if(sd)sd.onclick=function(){state.dark=true;applyTheme();render();saveState();showSettings();};
+    if(sd)sd.onclick=function(){state.dark=true;_applyThemeInner();render();saveState();showSettings();};
     var im=content.querySelector("#setImmersive");if(im)im.onclick=function(){toggleImmersive();};
     var fsw=content.querySelector("#setFullscreen");
     if(fsw)fsw.onclick=function(){
@@ -1709,7 +1710,7 @@ function renderSettingsContent(catId,content){
       var item=document.createElement("div");
       item.style.cssText="flex:1;cursor:pointer;padding:12px;border:2px solid "+(logoPreset===num?"var(--accent)":"var(--card-border)")+";border-radius:12px;text-align:center;transition:all .15s ease";
       item.innerHTML='<img src="'+(isDark?preset.comboDark:preset.comboLight)+'" style="width:48px;height:48px;object-fit:contain;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:'+(logoPreset===num?"var(--accent)":"var(--ink-dim)")+'">'+preset.label+'</div>';
-      item.onclick=function(){applyLogo(num);showSettings();};
+      item.onclick=function(){applyLogo(num,true);showSettings();};
       choices.appendChild(item);
     })(n);
   }

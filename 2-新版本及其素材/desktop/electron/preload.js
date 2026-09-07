@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   /* 原生全屏（不同于浏览器 Fullscreen API，用窗口级全屏） */
   toggleFullscreen: () => ipcRenderer.invoke("toggle-fullscreen"),
-  isFullscreen: () => ipcRenderer.invoke("is-fullscreen"),
 
   /* 应用信息 */
   getVersion: () => ipcRenderer.invoke("get-version"),
@@ -23,9 +22,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   /* 文件/目录对话框 */
   selectDirectory: () => ipcRenderer.invoke("select-directory"),
 
-  /* 系统路径 */
-  getUserDataPath: () => ipcRenderer.invoke("get-user-data-path"),
-  getDocumentsPath: () => ipcRenderer.invoke("get-documents-path"),
+  /* 系统路径
+     I5-fix: getUserDataPath / getDocumentsPath 为无调用方的死导出，已删除 */
 
   /* 打开文件/路径 */
   openPath: (p) => ipcRenderer.invoke("open-path", p),
@@ -38,6 +36,18 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   /* G8: 文件关联 — 监听 second-instance 发来的打开事件 */
   onOpenFantinFile: (cb) => ipcRenderer.on("open-fantin-file", cb),
+
+  /* G11: 设置任务栏图标风格 (preset=1/2/3, style="flat"|"clean") */
+  setTaskbarIcon: (data) => ipcRenderer.invoke("set-taskbar-icon", data),
+
+  /* H4: 设置 .fantin 文件图标——运行时写注册表 HKCU\...\.fantin\DefaultIcon + SHChangeNotify 刷新缓存（像 WPS 那样实时改，不用重装）。n=1/2/3 */
+  setFantinIcon: (n) => ipcRenderer.invoke("set-fantin-icon", n),
+
+  /* G11: 退出确认 — 主进程通知渲染进程弹 modal */
+  onShowQuitModal: (cb) => ipcRenderer.on("show-quit-modal", cb),
+  confirmQuit: () => ipcRenderer.invoke("confirm-quit"),
+  /* I5-fix: 用户取消退出时通知主进程清掉兜底定时器 */
+  cancelQuit: () => ipcRenderer.invoke("cancel-quit"),
 });
 
 /* 页面加载后注入桌面标记 */

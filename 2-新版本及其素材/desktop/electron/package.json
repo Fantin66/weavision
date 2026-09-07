@@ -1,7 +1,7 @@
 {
   "name": "zhijian-weavision",
-  "version": "0.4.0",
-  "description": "织见 · 思维关系板 — Desktop App (G9)",
+  "version": "0.5.0",
+  "description": "织见 · 思维关系板 — Desktop App (I6)",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -12,26 +12,27 @@
   "build": {
     "appId": "com.weavision.zhijian",
     "productName": "织见",
+    "copyright": "源代码公开 · 免费 · 禁止商用 © 2026 织见 Weavision",
     "files": [
       "main.js",
       "preload.js",
       "icon.png"
     ],
     "extraResources": [
-      {"from": "../../织见-思维关系板-G9.html", "to": "index.html"},
-      {"from": "../../g9", "to": "g9"},
-      {"from": "../../assets", "to": "assets"},
-      {"from": "../../教程附件", "to": "教程附件"}
+      {"from": "../../织见-思维关系板-I6.html", "to": "index.html"},
+      {"from": "../../i6", "to": "i6", "filter": ["**/*", "!**/.mimosa/**"]},
+      {"from": "../../g10", "to": "g10", "filter": ["assets/logos/**"]},
+      {"from": "icons", "to": "icons", "filter": ["*.png", "*.ico"]}
     ],
     "directories": {
-      "output": "../../发行版/G9"
+      "output": "../../发行版/I6"
     },
     "fileAssociations": [
       {
         "ext": "fantin",
         "name": "织见画板",
         "description": "织见思维关系板导出文件",
-        "icon": "icon.png",
+        "icon": "icons/fantin-2.ico",
         "role": "Editor"
       }
     ],
