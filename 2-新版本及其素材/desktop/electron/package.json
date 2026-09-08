@@ -1,7 +1,7 @@
 {
   "name": "zhijian-weavision",
-  "version": "0.5.0",
-  "description": "织见 · 思维关系板 — Desktop App (I6)",
+  "version": "0.5.2",
+  "description": "织见 · 思维关系板 — Desktop App (I9)",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -19,13 +19,36 @@
       "icon.png"
     ],
     "extraResources": [
-      {"from": "../../织见-思维关系板-I6.html", "to": "index.html"},
-      {"from": "../../i6", "to": "i6", "filter": ["**/*", "!**/.mimosa/**"]},
-      {"from": "../../g10", "to": "g10", "filter": ["assets/logos/**"]},
-      {"from": "icons", "to": "icons", "filter": ["*.png", "*.ico"]}
+      {
+        "from": "../../织见-思维关系板-I9.html",
+        "to": "index.html"
+      },
+      {
+        "from": "../../i6",
+        "to": "i6",
+        "filter": [
+          "**/*",
+          "!**/.mimosa/**"
+        ]
+      },
+      {
+        "from": "../../g10",
+        "to": "g10",
+        "filter": [
+          "assets/logos/**"
+        ]
+      },
+      {
+        "from": "icons",
+        "to": "icons",
+        "filter": [
+          "*.png",
+          "*.ico"
+        ]
+      }
     ],
     "directories": {
-      "output": "../../发行版/I6"
+      "output": "../../发行版/I9"
     },
     "fileAssociations": [
       {
@@ -37,7 +60,10 @@
       }
     ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "icon.png"
     },
     "mac": {
@@ -60,6 +86,7 @@
     "electron-builder": "^24.0.0"
   },
   "dependencies": {
-    "adm-zip": "^0.6.0"
+    "adm-zip": "^0.6.0",
+    "level": "^10.0.0"
   }
 }

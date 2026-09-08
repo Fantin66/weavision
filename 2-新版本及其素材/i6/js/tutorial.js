@@ -8,7 +8,7 @@
    - 语义关系线 → 五种类型 + 线权重 + 线型
    - 跃迁 → 跨画布跳转 (jumpTo)
 ============================================================ */
-const TUTORIAL_VERSION=18;
+const TUTORIAL_VERSION=19;
 function storeBuiltinTutorBlob(id,blob){
   if(!idb)return;
   try{const tx=idb.transaction("files","readwrite");tx.objectStore("files").put(blob,id);}catch(_){}
@@ -87,7 +87,7 @@ function ensureTutorProject(){
   const ddFile=makeBuiltinFile("DD尽调-关系板模板.md","text","text/markdown;charset=utf-8",`# DD 尽调关系板\n\n织见的核心使用场景：把尽调材料组织成一张可追溯的关系网。\n\n## 节点 = 判断\n- 核心判断：行业增长驱动力\n- 支撑判断：财务指标改善\n- 风险判断：客户集中度过高\n\n## 线 = 判断之间的关系\n- 财务改善 → 支撑 → 增长驱动\n- 客户集中 → 反证 → 商业可持续\n- 行业报告 → 证据 → 增长驱动\n\n## 便签 = 不确定的内容\n- "大客户续约率未公开，待验证"\n- "技术路线切换的窗口期不确定"\n\n## 附件 = 来源\n- 行业研究报告\n- 企业公告\n- 公开访谈记录`);
   const industryFile=makeBuiltinFile("商业航天-公开研究口径.md","text","text/markdown;charset=utf-8",`# 商业航天公开研究口径\n\n仅使用公开来源：\n\n- 政府公开政策与统计\n- 企业公告和公开访谈\n- 已公开的行业研究报告\n\n不纳入：会议纪要、上会材料、交易条款、项目专属资料。`);
   const materialFile=makeBuiltinFile("Win11-Fluent-材质系统.md","text","text/markdown;charset=utf-8",`# Win11 Fluent Design 材质系统\n\n织见的视觉基础是 Windows 11 Fluent Design 的材质方法论。\n\n## 七层堆叠\n\n| 层 | 名称 | 作用 |\n|---|---|---|\n| L1 | 漂移色 | 缓慢流动的底色光晕 |\n| L2 | Mica | 半透明云母质感 |\n| L3 | 噪点 | 微观颗粒感 |\n| L4 | 纹理 | 网格/圆点/线条/空白 |\n| L5 | 画布 | 透明，让底层透出 |\n| L6 | 节点 | 卡片层 |\n| L7 | Chrome | 工具栏/侧栏 |\n\n## 三种变体\n\n- **fluent**：磨砂玻璃（默认）\n- **neumorph**：新拟态——连续表面\n- **minimal**：简约——极简边框\n\n> 材质是地板，不是天花板。底层统一，表层因内容而变。`);
-  const roadmapFile=makeBuiltinFile("织见-路线图.md","text","text/markdown;charset=utf-8",`# 织见路线图\n\n## 已完成（C1–G5）\n\n- C1–C8：基础画布、节点、连接、便签、附件\n- C9–C12：形变展开、语义关系、布局系统\n- C13：精简重构，移除展开内容\n- E5：Win11 Fluent Design 材质系统\n- F1–F19：七种样式预设、背景纹理、漂移色、Mica\n- G1–G5：桌面应用（Electron）、导入导出、自动主题、AI 接口 v1.3\n\n## 待优化\n\n- 玻璃样式的绿带问题\n- SVG 矢量导出\n- 大画布性能（animateCamera 节流）\n\n## 待开发\n\n- 形变机制回归（仅限 mind-node）\n- AI 自主画板构建（利用 typed relations + morph）\n- OPML 导出\n- Web 预览安全（XFO/CSP）`);
+  const roadmapFile=makeBuiltinFile("织见-路线图.md","text","text/markdown;charset=utf-8",`# 织见路线图\n\n## 已完成（C1–I6）\n\n- C1–C8：基础画布、节点、连接、便签、附件\n- C9–C12：形变展开、语义关系、布局系统\n- C13：精简重构，移除展开内容\n- E5：Win11 Fluent Design 材质系统\n- F1–F19：七种样式预设、背景纹理、漂移色、Mica\n- G1–G12：桌面应用（Electron）、导入导出（.fantin）、自动主题、AI 接口 v1.3、任务栏图标、版权声明、形变 Bug 修复\n- H1–H5：性能优化（撤销栈/位图生命周期/渲染节流）、Web 预览机制、安全加固\n- I5–I6：v0.5.0 发布——第三方库本地化、PDF/Word 预览修复、安装版优化\n\n## 待优化\n\n- 性能优化中阶任务（H2/H3 待续）\n- 玻璃样式绿带问题（已搁置）\n- SVG 矢量导出（已搁置）\n\n## 待开发\n\n- AI 自主画板构建（利用 typed relations + morph）\n- OPML 导出\n- 更多预览格式支持\n- 形变机制深化`);
 
   /* ═══════════════════════════════════════════════════════════
      画布一：总览——什么是织见
@@ -335,16 +335,16 @@ function ensureTutorProject(){
      已完成 / 待优化 / 待开发
   ═══════════════════════════════════════════════════════════ */
   const c7Root=makeNode(c7,"织见：现状与规划",-10,-280,"#2d5fd3",null,
-    "# 现状与规划\n\n织见从 2024 年概念诞生到现在，经历了 C1–G5 多个版本迭代。\n\n这里记录已完成的工作、正在优化的问题、以及未来规划。",
+    "# 现状与规划\n\n织见从 2024 年概念诞生到现在，经历了 C1–I6 多个版本迭代，已发布 v0.5.0。\n\n这里记录已完成的工作、正在优化的问题、以及未来规划。",
     "持续迭代中。");
-  const c7Done=makeNode(c7,"已完成：C1–G5",-460,-100,"#319b77",c7Root,
-    "## 已完成里程碑\n\n- **C1–C8**：基础画布、节点、连接、便签、附件\n- **C9–C12**：形变展开、语义关系、布局系统\n- **C13**：精简重构，移除展开内容（将回归）\n- **E5**：Win11 Fluent Design 材质系统\n- **F1–F19**：七种样式预设、背景纹理、漂移色、Mica\n- **G1–G5**：桌面应用（Electron）、导入导出（.fantin）、自动主题、AI 接口 v1.3",
-    "核心功能已完成。");
+  const c7Done=makeNode(c7,"已完成：C1–I6",-460,-100,"#319b77",c7Root,
+    "## 已完成里程碑\n\n- **C1–C8**：基础画布、节点、连接、便签、附件\n- **C9–C12**：形变展开、语义关系、布局系统\n- **C13**：精简重构，移除展开内容（将回归）\n- **E5**：Win11 Fluent Design 材质系统\n- **F1–F19**：七种样式预设、背景纹理、漂移色、Mica\n- **G1–G12**：桌面应用（Electron）、导入导出（.fantin）、自动主题、AI 接口 v1.3、任务栏图标、版权声明、形变 Bug 修复\n- **H1–H5**：性能优化（撤销栈/位图生命周期/渲染节流）、Web 预览机制、安全加固\n- **I5–I6**：v0.5.0 发布——第三方库本地化、PDF/Word 预览修复、安装版优化",
+    "核心功能已完成，已发布桌面安装版。");
   const c7Optimize=makeNode(c7,"待优化",230,-100,"#d78f36",c7Root,
-    "## 待优化\n\n- 玻璃样式的绿带问题（低优先级）\n- SVG 矢量导出\n- 大画布性能（animateCamera 节流、annotationPulse）\n- 顶部菜单补全",
+    "## 待优化\n\n- 性能优化中阶任务（H2/H3 待续）\n- 玻璃样式绿带问题（已搁置）\n- SVG 矢量导出（已搁置）\n- Web 预览兼容性（部分站点禁止嵌入）",
     "持续打磨中。");
   const c7Develop=makeNode(c7,"待开发",-460,80,"#6b73cc",c7Root,
-    "## 待开发\n\n- **形变机制回归**：仅限 mind-node，精简实现\n- **AI 自主画板构建**：利用 typed relations + morph 自动画板\n- **OPML 导出**：标准格式互通\n- **Web 预览安全**：XFO/CSP 防护\n- **文件关联**：.fantin 双击打开",
+    "## 待开发\n\n- **AI 自主画板构建**：利用 typed relations + morph 自动画板\n- **OPML 导出**：标准格式互通\n- **更多预览格式**：扩展 PPT/PDF/Word 之外\n- **形变机制深化**：mind-node 展开的精简实现",
     "下一阶段重点。");
   const c7Position=makeNode(c7,"竞争定位",230,80,"#7a55c0",c7Root,
     "## 四个定位轴\n\n1. **就地形变**：节点展开 → 阅读区（护城河）\n2. **语义连接**：typed relations = 投资论证语言\n3. **聚焦切换**：全貌与单点\n4. **板→文导出**：关系板 → 投资建议书\n\n> AI 是辅助，不是卖点。",
@@ -354,7 +354,7 @@ function ensureTutorProject(){
   /* ── 品牌宣言 ── */
   const c7Brand=makeFileCard(c7,brandFile,-460,-280,220,58,"织见品牌宣言。");
   /* ── 便签 ── */
-  makeNote(c7,"## 版本命名规则\n\n- **C** 系列：Canvas（画布功能）\n- **E** 系列：Experience（材质体验）\n- **F** 系列：Fluent（样式预设）\n- **G** 系列：Desktop（桌面应用）\n\n> 每个大版本 = 一个完整的能力域。",-460,220,"#dbeafe",360,130,"版本命名逻辑。");
+  makeNote(c7,"## 版本命名规则\n\n- **C** 系列：Canvas（画布功能）\n- **E** 系列：Experience（材质体验）\n- **F** 系列：Fluent（样式预设）\n- **G** 系列：Desktop（桌面应用）\n- **H** 系列：Hardening（体检加固）\n- **I** 系列：Installer（安装集成）\n\n> 每个大版本 = 一个完整的能力域。",-460,220,"#dbeafe",360,150,"版本命名逻辑。");
   /* ── 关系 ── */
   relate(c7,c7Done,c7Optimize,"causes","已完成才知待优化");
   relate(c7,c7Optimize,c7Develop,"related","待优化和待开发并行推进");

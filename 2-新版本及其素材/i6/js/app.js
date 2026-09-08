@@ -368,8 +368,10 @@ function applyLogo(n,showToast){
   localStorage.setItem("zhijian-logo",String(n));
   /* G11: 联动任务栏图标 — 预设变化时同步更新任务栏 */
   if(window.electronAPI&&window.electronAPI.setTaskbarIcon){
-    var _iconStyle=localStorage.getItem("zhijian-icon-style")||"flat";
-    window.electronAPI.setTaskbarIcon({preset:n,style:_iconStyle});
+    var _iconStyle=localStorage.getItem("zhijian-icon-style")||"clean";
+    window.electronAPI.setTaskbarIcon({preset:n,style:_iconStyle}).then(function(r){
+      if(r&&r.ok===false)console.error("taskbar icon failed:",r.error);
+    });
   }
   /* G9: 仅在用户手动切换图标时弹 toast，主题切换时不弹 */
   if(showToast)toast("图标："+preset.label);
@@ -1064,6 +1066,7 @@ function showMoveFileMenu(fileId,anchorEl){
 
 /* 自定义弹层（替代浏览器原生 prompt/confirm） */
 const modal=document.getElementById("modal");
+var _modalFocusTimer=null;
 function showModal(title,bodyHtml,actions){
   const box=modal.querySelector(".modal-box");
   box.style.width=""; /* reset：showSettings 设的 680px 固定宽不残留到其他弹窗（如退出确认） */
@@ -1084,9 +1087,23 @@ function showModal(title,bodyHtml,actions){
   const closeBtn=box.querySelector(".modal-close");
   if(closeBtn)closeBtn.onclick=hideModal;
   modal.classList.add("show");
-  setTimeout(()=>{const inp=box.querySelector(".modal-input");if(inp)inp.focus();},50);
+  /* I9-fix: 用可取消的 timer 替代裸 setTimeout——hideModal 时取消，
+     否则 timer 在弹窗关闭后才触发，focus 一个隐藏的 input，
+     导致 isTyping() 返回 true 拦截所有快捷键（自愈现象的根因） */
+  if(_modalFocusTimer)clearTimeout(_modalFocusTimer);
+  _modalFocusTimer=setTimeout(function(){
+    _modalFocusTimer=null;
+    if(!modal.classList.contains("show"))return; /* 弹窗已关闭，不 focus */
+    const inp=box.querySelector(".modal-input");
+    if(inp)inp.focus();
+  },50);
 }
-function hideModal(){modal.classList.remove("show");}
+function hideModal(){
+  if(_modalFocusTimer){clearTimeout(_modalFocusTimer);_modalFocusTimer=null;}
+  var ae=document.activeElement;
+  if(ae&&modal.contains(ae))ae.blur();
+  modal.classList.remove("show");
+}
 modal.addEventListener("click",e=>{if(e.target===modal)hideModal();});
 /* 选项弹层 */
 function showOptions(title,opts){
@@ -1098,6 +1115,10 @@ function showOptions(title,opts){
       const opt=opts.find(o=>o.id===id);
       hideModal();
       if(opt&&opt.onClick)opt.onClick();
+      /* I9-fix: onClick 里的 render() 可能残留焦点到隐藏元素上，
+         导致 isTyping() 拦截所有快捷键。强制把焦点交还给 body。 */
+      var ae=document.activeElement;
+      if(ae&&ae!==document.body&&ae.tagName!=="CANVAS")ae.blur();
     });
   });
 }
@@ -1113,6 +1134,7 @@ function showPrompt(title,placeholder,defaultValue,onConfirm){
       if(e.key==="Enter"){e.preventDefault();if(onConfirm)onConfirm(inp.value);hideModal();}
       if(e.key==="Escape")hideModal();
     });
+    /* I9-fix: blur input after confirm to prevent isTyping() trap */
     inp.select();
   }
 }
@@ -1291,7 +1313,7 @@ document.getElementById("folderInput").addEventListener("change",async()=>{
   if(files.length) await importFiles(files);
 });
 function isEditingTarget(target){
-  return !!(target&&target.closest&&target.closest("input,textarea,select,[contenteditable='true'],.fv-md-editor,#detailPanel"));
+  return !!(target&&target.closest&&target.closest("input,textarea,select,[contenteditable='true'],.fv-md-editor"));
 }
 /* 系统文件复制粘贴与网址粘贴：编辑文本时保持原生粘贴，不抢输入。 */
 document.addEventListener("paste",e=>{
@@ -1761,7 +1783,7 @@ function renderSettingsContent(catId,content){
       '<div style="font-size:11px;color:var(--ink-faint)">开启后背景有缓慢漂浮的色块（其他动画不受影响）</div></div>'+
       '<div style="margin-bottom:20px"><div style="font-size:12px;color:var(--ink-dim);margin-bottom:8px">Fantin 文件图标</div>'+
       '<div style="display:flex;gap:12px">'+
-      [1,2,3].map(function(n){var on=(state.fantinIcon||2)===n;return '<div class="fantinIconBtn" data-n="'+n+'" style="flex:1;cursor:pointer;padding:12px;border:2px solid '+(on?"var(--accent)":"var(--card-border)")+';border-radius:12px;text-align:center;transition:all .15s ease"><img src="i5/assets/icons/fantin-'+n+'.ico" style="width:48px;height:48px;object-fit:contain;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:'+(on?"var(--accent)":"var(--ink-dim)")+'">第'+n+'张</div></div>';}).join("")+
+      [1,2,3].map(function(n){var on=(state.fantinIcon||2)===n;return '<div class="fantinIconBtn" data-n="'+n+'" style="flex:1;cursor:pointer;padding:12px;border:2px solid '+(on?"var(--accent)":"var(--card-border)")+';border-radius:12px;text-align:center;transition:all .15s ease"><img src="i6/assets/icons/fantin-'+n+'.ico" style="width:48px;height:48px;object-fit:contain;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:'+(on?"var(--accent)":"var(--ink-dim)")+'">第'+n+'张</div></div>';}).join("")+
       '</div><div style="font-size:11px;color:var(--ink-faint);margin-top:6px">点击即实时生效（写注册表 + 刷新缓存，无需重装）</div></div>'+
       '<div style="margin-bottom:20px"><div style="font-size:12px;color:var(--ink-dim);margin-bottom:8px">默认样式（新建项目时）</div>'+
       '<div style="font-size:12px;color:var(--ink-faint)">未来可选：默认使用哪种视觉样式</div></div>'+
@@ -1779,7 +1801,7 @@ function renderSettingsContent(catId,content){
     /* G11: 任务栏图标风格 — 仅桌面模式显示 */
     var iconStyleSec=content.querySelector("#iconStyleSection");
     if(window.electronAPI&&iconStyleSec){
-      var iconStyleVal=localStorage.getItem("zhijian-icon-style")||"flat";
+      var iconStyleVal=localStorage.getItem("zhijian-icon-style")||"clean";
       var iconStyleChoices=content.querySelector("#iconStyleChoices");
       var iconStyles=[
         {id:"flat",label:"扁平化",desc:"带框图标，适配亮暗"},
@@ -1792,9 +1814,18 @@ function renderSettingsContent(catId,content){
         sItem.onclick=function(){
           localStorage.setItem("zhijian-icon-style",s.id);
           var preset=parseInt(localStorage.getItem("zhijian-logo"))||3;
-          window.electronAPI.setTaskbarIcon({preset:preset,style:s.id});
-          toast("任务栏图标："+s.label);
           showSettings();
+          if(window.electronAPI&&window.electronAPI.setTaskbarIcon){
+            window.electronAPI.setTaskbarIcon({preset:preset,style:s.id}).then(function(r){
+              if(r&&r.ok===false){
+                toast("任务栏图标切换失败："+(r.error||"未知错误"));
+              }else{
+                toast("任务栏图标："+s.label);
+              }
+            });
+          }else{
+            toast("任务栏图标："+s.label);
+          }
         };
         iconStyleChoices.appendChild(sItem);
       })(iconStyles[si]);
@@ -1809,7 +1840,22 @@ function renderSettingsContent(catId,content){
     if(sd)sd.onclick=function(){_themeToken++;state.dark=true;_applyThemeInner();render();saveStateDebounced();showSettings();};
     var bfs=content.querySelector("#bgFlowSwitch");
     if(bfs)bfs.onclick=function(){state.reducedMotion=!state.reducedMotion;document.body.classList.toggle("reduced-motion",state.reducedMotion);saveStateDebounced();showSettings();};
-    content.querySelectorAll(".fantinIconBtn").forEach(function(b){b.onclick=function(){state.fantinIcon=parseInt(b.dataset.n);saveStateDebounced();if(window.electronAPI&&window.electronAPI.setFantinIcon)window.electronAPI.setFantinIcon(state.fantinIcon);showSettings();toast("Fantin 图标已更新（实时生效）");};});
+    content.querySelectorAll(".fantinIconBtn").forEach(function(b){b.onclick=function(){
+      state.fantinIcon=parseInt(b.dataset.n);
+      saveStateDebounced();
+      showSettings();
+      if(window.electronAPI&&window.electronAPI.setFantinIcon){
+        window.electronAPI.setFantinIcon(state.fantinIcon).then(function(r){
+          if(r&&r.ok===false){
+            toast("Fantin 图标更新失败："+(r.error||"未知错误"));
+          }else{
+            toast("Fantin 图标已更新（实时生效）");
+          }
+        });
+      }else{
+        toast("Fantin 图标已更新（实时生效）");
+      }
+    };});
   }
   else if(catId==="shortcuts"){
     var rows=[

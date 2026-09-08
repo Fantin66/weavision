@@ -1,6 +1,0 @@
-[0827/123854.034:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.
-[0827/131554.093:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.
-[0827/151625.067:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.
-[0827/161502.884:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.
-[0827/235713.708:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.
-[0828/091456.623:ERROR:cc\raster\one_copy_raster_buffer_provider.cc:282] Creation of StagingBuffer's SharedImage failed.

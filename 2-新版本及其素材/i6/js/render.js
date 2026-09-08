@@ -924,7 +924,7 @@ async function getWatermarkImg(){
   const key=preset+"-"+(dark?"dark":"light");
   if(_wmImgCache.img&&_wmImgCache.key===key)return _wmImgCache.img;
   try{
-    const url="i5/assets/watermarks/wm-"+preset+"-"+(dark?"dark":"light")+".png";
+    const url="i6/assets/watermarks/wm-"+preset+"-"+(dark?"dark":"light")+".png";
     const resp=await fetch(url);
     if(!resp.ok)throw new Error("fetch "+resp.status);
     const blob=await resp.blob();

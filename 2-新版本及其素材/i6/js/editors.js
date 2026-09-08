@@ -64,6 +64,16 @@ function dockContent(st){
       out.push(dkBtn({icon:"▦",label:"区块",title:"列表、待办、表格、引用与分割线",on:dockSubKind==="mdBlock",fn:()=>toggleDockSub("mdBlock")}));
       out.push(dkBtn({icon:"</>",label:"代码",title:"行内代码 `code`",fn:()=>mdWrap("`","`","code")}));
       out.push(dkBtn({icon:"🔗",label:"链接",title:"插入链接 [文本](https://)",fn:()=>mdInsert("[文本](https://)")}));
+    }else if(editingDetailId!==null){
+      out.push(dkBtn({icon:ICON.check||"✔",label:"完成",title:"完成编辑 (Ctrl+Enter)",fn:()=>{closeEditor(false);render();saveState();}}));
+      out.push(dkSep());
+      out.push(dkBtn({icon:"🔤",label:"字体",title:"字体工具栏（全部功能）",fn:()=>{noteFormatBar.style.display=noteFormatBar.style.display==="none"?"flex":"none";}}));
+      out.push(dkBtn({icon:"𝐁",label:"粗体",title:"加粗 **文本**",fn:()=>mdWrap("**","**","加粗")}));
+      out.push(dkBtn({icon:"𝐼",label:"斜体",title:"斜体 *文本*",fn:()=>mdWrap("*","*","斜体")}));
+      out.push(dkBtn({icon:"H",label:"标题",title:"标题层级",on:dockSubKind==="mdHeading",fn:()=>toggleDockSub("mdHeading")}));
+      out.push(dkBtn({icon:"▦",label:"区块",title:"列表、待办、表格、引用与分割线",on:dockSubKind==="mdBlock",fn:()=>toggleDockSub("mdBlock")}));
+      out.push(dkBtn({icon:"</>",label:"代码",title:"行内代码 `code`",fn:()=>mdWrap("`","`","code")}));
+      out.push(dkBtn({icon:"🔗",label:"链接",title:"插入链接 [文本](https://)",fn:()=>mdInsert("[文本](https://)")}));
     }else if(editingMindId!==null){
       out.push(dkBtn({icon:"✔",label:"完成",title:"完成 (Enter)",fn:()=>{closeMindEditor(false);render();saveState();}}));
       out.push(dkSep());

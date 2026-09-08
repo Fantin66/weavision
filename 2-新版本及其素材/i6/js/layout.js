@@ -869,7 +869,7 @@ function closeEditor(cancel){
       saveStateDebounced();
     }
     editingDetailId=null;editingNoteDraftStyle=null;
-    noteEd.style.display="none";noteFormatBar.style.display="none";
+    noteEd.blur();noteEd.style.display="none";noteFormatBar.style.display="none";
     if(activeMdEditor===noteEd)activeMdEditor=null;renderDock(true);requestRender();return;
   }
   if(editingNoteId===null) return;
@@ -883,7 +883,7 @@ function closeEditor(cancel){
   }
   editingNoteId=null;
   editingNoteDraftStyle=null;
-  noteEd.style.display="none";
+  noteEd.blur();noteEd.style.display="none";
   noteEd.classList.remove("float");   /* 退出浮动态 */
   if(activeMdEditor===noteEd)activeMdEditor=null;
   noteFormatBar.style.display="none";notePreview.style.display="none";
@@ -899,19 +899,21 @@ function closeMindEditor(cancel){
     saveState();
   }
   editingMindId=null;
-  noteEd.style.display="none";
+  noteEd.blur();noteEd.style.display="none";
   noteFormatBar.style.display="none";notePreview.style.display="none";
   renderDock(true);   /* 关闭后下 Dock 回到相应状态 */
   requestRender();
 }
 function isTyping(){
-  /* I5-fix: 与 app.js isEditingTarget 同一标准（补 SELECT / contenteditable / .fv-md-editor / #detailPanel）——
-     旧版漏判导致字体下拉聚焦时单字母快捷键仍触发、空格被画布抢走 */
   const ae=document.activeElement;
-  if(!ae)return false;
+  if(!ae||ae===document.body)return false;
+  /* I9-fix: 隐藏元素（display:none 或在 display:none 容器内）的 offsetParent===null。
+     弹窗/编辑器关闭后浏览器可能把焦点留在隐藏元素上——忽略它，
+     否则所有快捷键被 isTyping() 拦截（自愈现象的第二道防线） */
+  if(ae.offsetParent===null)return false;
   const tag=ae.tagName||"";
   if(tag==="TEXTAREA"||tag==="INPUT"||tag==="SELECT")return true;
-  return !!(ae.isContentEditable||(ae.closest&&ae.closest(".fv-md-editor,#detailPanel")));
+  return !!(ae.isContentEditable||(ae.closest&&ae.closest(".fv-md-editor")));
 }
 
 /* ---------- 右键菜单（内容编辑 / 空白添加） ---------- */

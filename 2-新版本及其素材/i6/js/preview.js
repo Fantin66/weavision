@@ -917,6 +917,9 @@ function layoutFullscreen(){
 }
 function closeFullscreen(){
   fullscreenToken++;
+  /* I8-fix: 显式 blur 全屏编辑器 textarea，否则 isTyping() 仍返回 true 导致快捷键失效 */
+  if(fvEditorState&&fvEditorState.src)fvEditorState.src.blur();
+  fvEditorState=null;
   const fv=document.getElementById("fullscreenView");
   if(fv){
     fv.classList.remove("open");
