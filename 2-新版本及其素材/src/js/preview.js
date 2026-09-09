@@ -1199,12 +1199,12 @@ async function ensureCdn(kind){
     s.src=src;s.onload=res;s.onerror=()=>rej(new Error("load fail: "+src));
     document.head.appendChild(s);
   });
-  /* 本地优先：vendor 脚本随版本目录发布（i6/assets/vendor/），与 HTML 同根相对引用，离线也能渲染。
+  /* 本地优先：vendor 脚本随版本目录发布（src/assets/vendor/），与 HTML 同根相对引用，离线也能渲染。
      I6-fix: 原路径 "assets/vendor/" 从 I6.html 解析到根目录的 assets/vendor（只有 README），
-     本地文件全 404、退而走 CDN；改为 "i6/assets/vendor/" 后本地直接命中，不再依赖 CDN。 */
+     本地文件全 404、退而走 CDN；改为 "src/assets/vendor/" 后本地直接命中，不再依赖 CDN。 */
   const LOCAL=function(key2){
     const names={jszip:"jszip.min.js",docx:"docx-preview.min.js",xlsx:"xlsx.full.min.js",pdfjs:"pdf.min.js",pdfjsWorker:"pdf.worker.min.js",pptx:"pptx-preview.umd.js"};
-    return "i6/assets/vendor/"+names[key2];
+    return "src/assets/vendor/"+names[key2];
   };
   toast("正在加载"+kindLabel+"预览组件…");
   _cdnPromises[key]=(async function(){
