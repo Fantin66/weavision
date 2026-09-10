@@ -343,18 +343,18 @@ function applyFontPreset(){
 
 /* E5: Logo system — 3 icon sets. G1: paths use g1/ prefix (HTML is in parent dir) */
 const LOGO_PRESETS={
-  1:{label:"穿线元素",light:"g10/assets/logos/logo1-light.png",dark:"g10/assets/logos/logo1-dark.png",
-     cnLight:"g10/assets/logos/logo01-中文字标-light.png",cnDark:"g10/assets/logos/logo01-中文字标-dark.png",
-     enLight:"g10/assets/logos/logo01-英文字标-light.png",enDark:"g10/assets/logos/logo01-英文字标-dark.png",
-     comboLight:"g10/assets/logos/logo01-横版组合-light.png",comboDark:"g10/assets/logos/logo01-横版组合-dark.png"},
-  2:{label:"聚焦轨道",light:"g10/assets/logos/logo2-light.png",dark:"g10/assets/logos/logo2-dark.png",
-     cnLight:"g10/assets/logos/logo02-中文字标-light.png",cnDark:"g10/assets/logos/logo02-中文字标-dark.png",
-     enLight:"g10/assets/logos/logo02-英文字标-light.png",enDark:"g10/assets/logos/logo02-英文字标-dark.png",
-     comboLight:"g10/assets/logos/logo02-横版组合-light.png",comboDark:"g10/assets/logos/logo02-横版组合-dark.png"},
-  3:{label:"叠合元素",light:"g10/assets/logos/logo3-light.png",dark:"g10/assets/logos/logo3-dark.png",
-     cnLight:"g10/assets/logos/logo03-中文字标-light.png",cnDark:"g10/assets/logos/logo03-中文字标-dark.png",
-     enLight:"g10/assets/logos/logo03-英文字标-light.png",enDark:"g10/assets/logos/logo03-英文字标-dark.png",
-     comboLight:"g10/assets/logos/logo03-横版组合-light.png",comboDark:"g10/assets/logos/logo03-横版组合-dark.png"},
+  1:{label:"穿线元素",light:"src/assets/logos/logo1-light.png",dark:"src/assets/logos/logo1-dark.png",
+     cnLight:"src/assets/logos/logo01-中文字标-light.png",cnDark:"src/assets/logos/logo01-中文字标-dark.png",
+     enLight:"src/assets/logos/logo01-英文字标-light.png",enDark:"src/assets/logos/logo01-英文字标-dark.png",
+     comboLight:"src/assets/logos/logo01-横版组合-light.png",comboDark:"src/assets/logos/logo01-横版组合-dark.png"},
+  2:{label:"聚焦轨道",light:"src/assets/logos/logo2-light.png",dark:"src/assets/logos/logo2-dark.png",
+     cnLight:"src/assets/logos/logo02-中文字标-light.png",cnDark:"src/assets/logos/logo02-中文字标-dark.png",
+     enLight:"src/assets/logos/logo02-英文字标-light.png",enDark:"src/assets/logos/logo02-英文字标-dark.png",
+     comboLight:"src/assets/logos/logo02-横版组合-light.png",comboDark:"src/assets/logos/logo02-横版组合-dark.png"},
+  3:{label:"叠合元素",light:"src/assets/logos/logo3-light.png",dark:"src/assets/logos/logo3-dark.png",
+     cnLight:"src/assets/logos/logo03-中文字标-light.png",cnDark:"src/assets/logos/logo03-中文字标-dark.png",
+     enLight:"src/assets/logos/logo03-英文字标-light.png",enDark:"src/assets/logos/logo03-英文字标-dark.png",
+     comboLight:"src/assets/logos/logo03-横版组合-light.png",comboDark:"src/assets/logos/logo03-横版组合-dark.png"},
 };
 let logoPreset=3;
 function applyLogo(n,showToast){
@@ -572,6 +572,12 @@ document.addEventListener("keydown",e=>{
   if(e.key==="F11"){
     e.preventDefault();
     toggleImmersive();
+    return;
+  }
+  /* J4: 原生全屏：Alt+Enter 切换窗口全屏 */
+  if(e.altKey&&!e.ctrlKey&&!e.metaKey&&e.key==="Enter"){
+    e.preventDefault();
+    if(window.electronAPI&&window.electronAPI.toggleFullscreen)window.electronAPI.toggleFullscreen();
     return;
   }
   /* A 键：添加批注 */
@@ -843,6 +849,7 @@ function mountControls(){
       {icon:"",label:"凝视（100%居中）",key:"G",fn:()=>gazeAtSelection()},
       {icon:"",label:"纵览（全部内容）",key:"Y",fn:()=>fitAll()},
       {icon:"",label:"沉浸模式",key:"F11",fn:()=>toggleImmersive()},
+      {icon:"",label:"全屏",key:"Alt+Enter",fn:()=>{if(window.electronAPI&&window.electronAPI.toggleFullscreen)window.electronAPI.toggleFullscreen();}},
       {sep:true},
       {icon:"",label:"重置织见学堂",key:"",fn:()=>resetTutorial()},
       {icon:"",label:"设置",key:"",fn:()=>showSettings()},
@@ -1657,7 +1664,7 @@ init();
   var sl=parseInt(localStorage.getItem("zhijian-logo"))||3;
   var preset=LOGO_PRESETS[sl]||LOGO_PRESETS[3];
   var img=document.querySelector(".splash-logo");
-  if(img)img.src="g10/assets/logos/splash-"+sl+".png";  /* G1: 用透明母版 icon */
+  if(img)img.src="src/assets/logos/splash-"+sl+".png";  /* G1: 用透明母版 icon */
 })();
 /* ResizeObserver 持续监听 board 尺寸变化（CSS transition/窗口变化/响应式折叠都覆盖） */
 
@@ -1783,7 +1790,7 @@ function renderSettingsContent(catId,content){
       '<div style="font-size:11px;color:var(--ink-faint)">开启后背景有缓慢漂浮的色块（其他动画不受影响）</div></div>'+
       '<div style="margin-bottom:20px"><div style="font-size:12px;color:var(--ink-dim);margin-bottom:8px">Fantin 文件图标</div>'+
       '<div style="display:flex;gap:12px">'+
-      [1,2,3].map(function(n){var on=(state.fantinIcon||2)===n;return '<div class="fantinIconBtn" data-n="'+n+'" style="flex:1;cursor:pointer;padding:12px;border:2px solid '+(on?"var(--accent)":"var(--card-border)")+';border-radius:12px;text-align:center;transition:all .15s ease"><img src="i6/assets/icons/fantin-'+n+'.ico" style="width:48px;height:48px;object-fit:contain;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:'+(on?"var(--accent)":"var(--ink-dim)")+'">第'+n+'张</div></div>';}).join("")+
+      [1,2,3].map(function(n){var on=(state.fantinIcon||2)===n;return '<div class="fantinIconBtn" data-n="'+n+'" style="flex:1;cursor:pointer;padding:12px;border:2px solid '+(on?"var(--accent)":"var(--card-border)")+';border-radius:12px;text-align:center;transition:all .15s ease"><img src="src/assets/icons/fantin-'+n+'.ico" style="width:48px;height:48px;object-fit:contain;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:'+(on?"var(--accent)":"var(--ink-dim)")+'">第'+n+'张</div></div>';}).join("")+
       '</div><div style="font-size:11px;color:var(--ink-faint);margin-top:6px">点击即实时生效（写注册表 + 刷新缓存，无需重装）</div></div>'+
       '<div style="margin-bottom:20px"><div style="font-size:12px;color:var(--ink-dim);margin-bottom:8px">默认样式（新建项目时）</div>'+
       '<div style="font-size:12px;color:var(--ink-faint)">未来可选：默认使用哪种视觉样式</div></div>'+
@@ -1887,6 +1894,7 @@ function renderSettingsContent(catId,content){
       ["凝视(100%)","G",""],
       ["纵览全部","Y",""],
       ["沉浸模式","F11 / Alt+F",""],
+      ["全屏","Alt+Enter","原生窗口全屏"],
       ["跃迁到画布","J",""],
       ["搜索","Ctrl+F",""],
       ["","",""],
