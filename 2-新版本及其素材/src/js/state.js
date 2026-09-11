@@ -312,7 +312,7 @@ function zoomAt(sx,sy,factor){
   const wy=state.camera.y+sy/state.camera.zoom;
   state.camera.zoom=nz;state.camera.x=wx-sx/nz;state.camera.y=wy-sy/nz;
   if(zoomPctEl) zoomPctEl.textContent=Math.round(nz*100)+"%";
-  render();
+  requestRender();
 }
 function fitAll(){
   const b=boundsOfItems();if(!b) return;

@@ -729,6 +729,14 @@ body.immersive #immersiveExitBtn{display:flex;align-items:center;gap:7px}
 #previewLayer .pv-morph-tools .pv-morph-zoom{min-width:42px;font-variant-numeric:tabular-nums}
 #previewLayer .pv-morph-content{flex:1;min-height:0;overflow:auto;position:relative;background:#fff;transform-origin:top left}
 [data-theme="dark"] #previewLayer .pv-morph-content{background:#20242f}
+[data-theme="dark"] #previewLayer .pv-win .pv-body{background:#20242f}
+/* J3-fix: Excel 预览暗色模式用 CSS 跟 data-theme 走，不用内联样式（避免切主题不刷新） */
+.pv-sheet table{border-collapse:collapse;margin:10px 0;font-size:12px;min-width:100%;background:#fff}
+.pv-sheet td,.pv-sheet th{border:1px solid rgba(0,0,0,.09);padding:5px 9px;font-weight:400;white-space:pre-wrap;vertical-align:top;color:inherit}
+.pv-sheet h4{padding:8px 12px;margin:0;color:#1d1d1f;font-size:13px;border-bottom:1px solid rgba(0,0,0,.06)}
+[data-theme="dark"] .pv-sheet table{background:#1a1a2e}
+[data-theme="dark"] .pv-sheet td,[data-theme="dark"] .pv-sheet th{border-color:rgba(255,255,255,.08);color:#e0e0e8}
+[data-theme="dark"] .pv-sheet h4{color:#e8e8ec;border-bottom-color:rgba(255,255,255,.06)}
 #previewLayer .pv-web-wrap,.pv-win .pv-web-wrap{display:flex;flex-direction:column;flex:1 1 0;width:100%;height:100%;min-height:0;overflow:hidden}
 #previewLayer .pv-web-wrap>.pv-stage,.pv-win .pv-web-wrap>.pv-stage{position:relative;flex:1 1 0;width:100%;height:100%!important;min-height:0;overflow:hidden}
 #previewLayer .pv-morph .morph-fit{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
@@ -1563,45 +1571,75 @@ body.reduced-motion #bg-l1-drift{animation:none!important}
 #dockBar,#selbar,#ctxMenu{z-index:48}
 #focusHud{z-index:50}
 
-/* --- L1 漂移色：超慢动画 + 径向渐变色块 --- */
+/* --- L1 漂移色：3 层独立游动 + blur 柔化，通透高级感 --- */
 #bg-l1-drift{
-  inset:-15%;
-  animation:f1-drift 60s ease-in-out infinite alternate;
+  inset:-20%;
+  filter:blur(50px);
+  animation:drift-a 14s ease-in-out infinite alternate;
 }
-@keyframes f1-drift{
-  0%{transform:translate(0,0) scale(1)}
-  33%{transform:translate(3vw,-2vh) scale(1.04)}
-  66%{transform:translate(-2.5vw,1.5vh) scale(1.06)}
-  100%{transform:translate(1.5vw,3vh) scale(1.03)}
+#bg-l1-drift::before,#bg-l1-drift::after{
+  content:"";position:absolute;inset:-15%;
 }
-/* F4: neutral 色族去掉青绿（用户反馈右侧持续发绿），改为蓝+紫中性搭配 */
+#bg-l1-drift::before{animation:drift-b 18s ease-in-out infinite alternate;}
+#bg-l1-drift::after{animation:drift-c 22s ease-in-out infinite alternate;}
+@keyframes drift-a{
+  0%{transform:translate(0,0) scale(1.1)}
+  50%{transform:translate(8vw,5vh) scale(1.2)}
+  100%{transform:translate(-6vw,-4vh) scale(1.15)}
+}
+@keyframes drift-b{
+  0%{transform:translate(6vw,-4vh) scale(1.1)}
+  50%{transform:translate(-7vw,6vh) scale(1.18)}
+  100%{transform:translate(4vw,3vh) scale(1.12)}
+}
+@keyframes drift-c{
+  0%{transform:translate(-5vw,4vh) scale(1.15)}
+  50%{transform:translate(7vw,-3vh) scale(1.1)}
+  100%{transform:translate(-3vw,-5vh) scale(1.2)}
+}
+/* neutral：蓝+绿+琥珀，取自界面已有色的亮版，三色均衡可见 */
 [data-bgfamily="neutral"] #bg-l1-drift{
-  background:
-    radial-gradient(circle at 20% 25%,rgba(91,126,225,.35),transparent 42%),
-    radial-gradient(circle at 78% 68%,rgba(122,85,192,.22),transparent 45%),
-    radial-gradient(circle at 50% 85%,rgba(180,120,200,.18),transparent 50%);
+  background:radial-gradient(circle at 30% 30%,rgba(59,130,246,.42),transparent 55%);
 }
+[data-bgfamily="neutral"] #bg-l1-drift::before{
+  background:radial-gradient(circle at 60% 70%,rgba(52,211,153,.3),transparent 55%);
+}
+[data-bgfamily="neutral"] #bg-l1-drift::after{
+  background:radial-gradient(circle at 20% 80%,rgba(251,191,36,.28),transparent 55%);
+}
+/* warm：橙+红+金，暖阳（cream/kraft 底色） */
 [data-bgfamily="warm"] #bg-l1-drift{
-  background:
-    radial-gradient(circle at 25% 30%,rgba(224,136,42,.35),transparent 42%),
-    radial-gradient(circle at 75% 70%,rgba(201,74,62,.28),transparent 45%),
-    radial-gradient(circle at 50% 50%,rgba(245,158,11,.2),transparent 50%);
+  background:radial-gradient(circle at 30% 30%,rgba(251,146,60,.4),transparent 55%);
 }
+[data-bgfamily="warm"] #bg-l1-drift::before{
+  background:radial-gradient(circle at 65% 65%,rgba(248,113,113,.32),transparent 55%);
+}
+[data-bgfamily="warm"] #bg-l1-drift::after{
+  background:radial-gradient(circle at 25% 75%,rgba(252,211,77,.25),transparent 55%);
+}
+/* cool：蓝+青+绿，冷调（blue 底色） */
 [data-bgfamily="cool"] #bg-l1-drift{
-  background:
-    radial-gradient(circle at 20% 30%,rgba(45,95,211,.35),transparent 42%),
-    radial-gradient(circle at 80% 65%,rgba(122,85,192,.28),transparent 45%),
-    radial-gradient(circle at 50% 80%,rgba(91,126,225,.22),transparent 50%);
+  background:radial-gradient(circle at 30% 30%,rgba(45,95,211,.4),transparent 55%);
 }
+[data-bgfamily="cool"] #bg-l1-drift::before{
+  background:radial-gradient(circle at 65% 65%,rgba(34,211,238,.32),transparent 55%);
+}
+[data-bgfamily="cool"] #bg-l1-drift::after{
+  background:radial-gradient(circle at 25% 75%,rgba(49,155,119,.22),transparent 55%);
+}
+/* green：翠+青+黄绿，自然 */
 [data-bgfamily="green"] #bg-l1-drift{
-  background:
-    radial-gradient(circle at 25% 30%,rgba(31,160,106,.32),transparent 42%),
-    radial-gradient(circle at 75% 65%,rgba(67,176,154,.28),transparent 45%),
-    radial-gradient(circle at 50% 85%,rgba(136,196,110,.2),transparent 50%);
+  background:radial-gradient(circle at 30% 30%,rgba(74,222,128,.38),transparent 55%);
+}
+[data-bgfamily="green"] #bg-l1-drift::before{
+  background:radial-gradient(circle at 65% 65%,rgba(45,212,191,.32),transparent 55%);
+}
+[data-bgfamily="green"] #bg-l1-drift::after{
+  background:radial-gradient(circle at 25% 75%,rgba(190,242,100,.22),transparent 55%);
 }
 [data-theme="dark"] #bg-l1-drift{opacity:.7}
 
-/* --- L2 Mica：半透明，漂移色 + 底色透出（F2: 从94%降到82%修复漂移不可见） --- */
+/* --- L2 Mica：回退到82% --- */
 [data-variant="fluent"] #bg-l2-mica{
   background:linear-gradient(180deg,rgba(250,250,252,.82),rgba(246,248,252,.78));
 }
